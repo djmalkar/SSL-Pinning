@@ -25,7 +25,6 @@ import tutorial.sslpinning.ui.theme.SSLPinningTheme
 import java.net.URL
 import java.util.Scanner
 
-
 private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity() {
@@ -46,6 +45,10 @@ class MainActivity : ComponentActivity() {
                                 .height(10.dp)
                         )
 
+                        /**
+                         * Showcase how website if pinned to proper certificate leads to successful
+                         * Handshake
+                         */
                         FilledTonalButton(
                             onClick = { testUrlConnection("https://www.wikipedia.org/") },
                             colors = ButtonDefaults.buttonColors(
@@ -61,6 +64,10 @@ class MainActivity : ComponentActivity() {
                                 .height(20.dp)
                         )
 
+                        /**
+                         * Showcase how website if pinned to wrong certificate leads to Handshake
+                         * Fail
+                         */
                         FilledTonalButton(
                             onClick = { testUrlConnection("https://www.google.co.in/") },
                             colors = ButtonDefaults.buttonColors(
@@ -69,6 +76,25 @@ class MainActivity : ComponentActivity() {
                             )
                         ) {
                             Text("SSL Certificate Connection Fail")
+                        }
+
+                        Spacer(
+                            modifier = Modifier
+                                .height(20.dp)
+                        )
+
+                        /**
+                         * Showcase how website if pinned to correct SHA256 hash of public key
+                         * leads to successful Handshake
+                         */
+                        FilledTonalButton(
+                            onClick = { testUrlConnection("https://www.facebook.com/") },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Red,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Text("SSL Public Key Pinning Pass")
                         }
                     }
                 }
