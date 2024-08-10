@@ -20,4 +20,12 @@
             <pin digest="SHA-256">WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=</pin>
         </pin-set>
     </domain-config>
+    <domain-config>
+        <domain includeSubdomains="true">github.com</domain>
+        <pin-set expiration="2024-08-18">
+            <pin digest="SHA-256">47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=</pin>
+            <!-- backup pin -->
+            <pin digest="SHA-256">WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=</pin>
+        </pin-set>
+    </domain-config>
 </network-security-config>

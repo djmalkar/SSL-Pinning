@@ -2,6 +2,7 @@ package tutorial.sslpinning
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,9 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tutorial.sslpinning.ui.theme.SSLPinningTheme
 import java.net.URL
 import java.util.Scanner
+import javax.net.ssl.SSLHandshakeException
 
 private const val TAG = "MainActivity"
 
@@ -42,7 +45,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Spacer(
                             modifier = Modifier
-                                .height(10.dp)
+                                .height(20.dp)
                         )
 
                         /**
@@ -90,11 +93,30 @@ class MainActivity : ComponentActivity() {
                         FilledTonalButton(
                             onClick = { testUrlConnection("https://www.facebook.com/") },
                             colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Green,
+                                contentColor = Color.DarkGray
+                            )
+                        ) {
+                            Text("SSL Public Key Pinning Pass")
+                        }
+
+                        Spacer(
+                            modifier = Modifier
+                                .height(20.dp)
+                        )
+
+                        /**
+                         * Showcase how website if pinned to correct SHA256 hash of public key
+                         * leads to unsuccessful Handshake
+                         */
+                        FilledTonalButton(
+                            onClick = { testUrlConnection("https://github.com/") },
+                            colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Red,
                                 contentColor = Color.White
                             )
                         ) {
-                            Text("SSL Public Key Pinning Pass")
+                            Text("SSL Public Key Pinning Fail")
                         }
                     }
                 }
@@ -104,11 +126,21 @@ class MainActivity : ComponentActivity() {
 
     private fun testUrlConnection(webUrl: String) {
         lifecycleScope.launch(Dispatchers.IO) {
-            val url = URL(webUrl)
-            val openStream = url.openStream()
-            val scanner = Scanner(openStream, "UTF-8")
-            val out = scanner.useDelimiter("\\A").next();
-            Log.d(TAG, "Output = $out")
+            try {
+                val url = URL(webUrl)
+                val openStream = url.openStream()
+                val scanner = Scanner(openStream, "UTF-8")
+                val out = scanner.useDelimiter("\\A").next();
+                Log.d(TAG, "Output = $out")
+                showToast("Successful handshake")
+            } catch (exception : SSLHandshakeException) {
+                Log.d(TAG, "Exception cause = ${exception.message}")
+                showToast(exception.message ?: "Handshake Failed")
+            }
         }
+    }
+
+    private suspend fun showToast(message: String) = withContext(Dispatchers.Main) {
+        Toast.makeText(application, message, Toast.LENGTH_LONG).show()
     }
 }
